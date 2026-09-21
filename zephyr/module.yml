@@ -1,0 +1,4 @@
+name: zmk-keyboard-teenspirit
+build:
+  settings:
+    board_root: .
