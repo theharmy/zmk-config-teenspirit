@@ -1,14 +1,123 @@
+# This file specifies the build dependencies for GitHub Action workflows.
+#
+# The repository layout:
+# ├── boards/shields/teenspirit  (custom shield)
+# ├── config                    (user config: keymap, keycodes, manifest)
+# └── zephyr/module.yml         (makes this repo a Zephyr module)
+#
+# This manifest is maintained using pin-west. Run `pin-west bump` to update
+# all packages.
+---
 manifest:
   defaults:
-    revision: v0.3
+    remote: urob
+
   remotes:
+    - name: urob
+      url-base: https://github.com/urob
     - name: zmkfirmware
       url-base: https://github.com/zmkfirmware
-    # Additional modules containing boards/shields/custom code can be listed here as well
-    # See https://docs.zephyrproject.org/3.2.0/develop/west/manifest.html#projects
+    - name: zzeneg
+      url-base: https://github.com/zzeneg
+    - name: srwi
+      url-base: https://github.com/srwi
+
   projects:
     - name: zmk
       remote: zmkfirmware
+      revision: 6e2ef41e022d555b10f116e395832913f71717b3 # main (2026-08-18)
       import: app/west.yml
+
+    # ZMK modules
+    - name: zmk-adaptive-key
+      path: modules/zmk/adaptive-key
+      revision: e5b335a7b1076cb122582f5a892b118b02a3be34 # main (2026-08-18)
+    - name: zmk-auto-layer
+      path: modules/zmk/auto-layer
+      revision: 62c201934711369d50a28df12e1d055d05cb6460 # main (2026-08-18)
+    - name: zmk-helpers
+      path: modules/zmk/helpers
+      revision: bc114546392b4615ac90a99140eaf21dde31209d # main (2026-08-18)
+    - name: zmk-leader-key
+      path: modules/zmk/leader-key
+      revision: e894d9afa5164b7fff641db4194fc3d4d6e84bbb # main (2026-08-18)
+    - name: zmk-tri-state
+      path: modules/zmk/tri-state
+      revision: 269b13eb3f5491292b627ac3892589af32de3e17 # main (2026-08-18)
+    - name: zmk-unicode
+      path: modules/zmk/unicode
+      revision: a1e3d3eed54dea800b5342a251eb3b83eee3b5ec # main (2026-08-18)
+    - name: zmk-raw-hid
+      path: modules/zmk/raw-hid
+      remote: zzeneg
+      revision: 6a37765dfab6197292e7a9f47305dcf87386d56a # main (2026-09-02)
+    - name: zmk-keypeek-layer-notifier
+      path: modules/zmk/keypeek-layer-notifier
+      remote: srwi
+      revision: b600af3bb7d1795073a4ce23e08d6db46371551b # master (2026-09-02)
+
+    # Avoid downloading GBs of unused Zephyr modules. Remove this section to
+    # restore the default (needed for less common hardware).
+    - name: zephyr
+      remote: zmkfirmware
+      revision: 10ba6d0cb38bc3d258775d27982f707599320085 # v4.1.0+zmk-fixes (2026-08-18)
+      clone-depth: 1
+      import:
+        name-allowlist:
+          - cmsis
+          - hal_nordic
+          - hal_rpi_pico
+          - hal_stm32  # imported independently by ZMK
+          - lvgl  # imported independently by ZMK
+          - mbedtls
+          - nanopb
+          - tinycrypt
+
+    # --- imported projects pinned by pin-west; do not edit ---
+    - name: cmsis # via zephyr (west.yml)
+      url: https://github.com/zephyrproject-rtos/cmsis
+      revision: d1b8b20b6278615b00e136374540eb1c00dcabe7
+      path: modules/hal/cmsis
+      groups: [hal]
+    - name: hal_nordic # via zephyr (west.yml)
+      url: https://github.com/zephyrproject-rtos/hal_nordic
+      revision: 37ca068d7b013fb65a2acc9306bffa48a3e72839
+      path: modules/hal/nordic
+      groups: [hal]
+    - name: hal_rpi_pico # via zephyr (west.yml)
+      url: https://github.com/zephyrproject-rtos/hal_rpi_pico
+      revision: 7b57b24588797e6e7bf18b6bda168e6b96374264
+      path: modules/hal/rpi_pico
+      groups: [hal]
+    - name: hal_stm32 # via zmk (app/west.yml)
+      url: https://github.com/zmkfirmware/hal_stm32
+      revision: 4fcc3a3f32abe1c4cb76d9d1cef967728dd03908
+      path: modules/hal/stm32
+      groups: [hal]
+    - name: lvgl # via zmk (app/west.yml)
+      url: https://github.com/zmkfirmware/lvgl
+      revision: f1db87ee98f1810328a8419572fa42a3b5f352ae
+      path: modules/lib/gui/lvgl
+    - name: mbedtls # via zephyr (west.yml)
+      url: https://github.com/zephyrproject-rtos/mbedtls
+      revision: 4952e1328529ee549d412b498ea71c54f30aa3b1
+      path: modules/crypto/mbedtls
+      groups: [crypto]
+    - name: nanopb
+      url: https://github.com/zephyrproject-rtos/nanopb
+      revision: 7307ce399b81ddcb3c3a5dc862c52d4754328d38
+      path: modules/lib/nanopb
+      groups: [optional]
+    - name: tinycrypt # via zephyr (west.yml)
+      url: https://github.com/zephyrproject-rtos/tinycrypt
+      revision: 1012a3ebee18c15ede5efc8332ee2fc37817670f
+      path: modules/crypto/tinycrypt
+      groups: [crypto]
+    - name: zmk-studio-messages # via zmk (app/west.yml)
+      url: https://github.com/zmkfirmware/zmk-studio-messages
+      revision: 6cb4c283e76209d59c45fbcb218800cd19e9339d
+      path: modules/msgs/zmk-studio-messages
+    # --- end of imported projects ---
+
   self:
     path: config

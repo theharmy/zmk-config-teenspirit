@@ -1,0 +1,53 @@
+/*
+ * ==============================================================================
+ * Teenspirit Combo Definitions (Modular Include)
+ * ==============================================================================
+ *
+ * Categorized by functionality:
+ * 1. Vertical German Digraph Bigrams (Layer 0 & Layer 1)
+ * 2. Coding & Navigation Combos (Tab, Enter, Esc, Backspace, Delete)
+ * 3. Fast Programming Symbols (Under, Minus, Colon, Semi)
+ * 4. System Chords (Caps Word, Studio Unlock with 200ms idle)
+ * ==============================================================================
+ */
+
+#pragma once
+
+// --- Layer 0: Vertical Bigrams ---
+ZMK_COMBO(combo_rl, &macro_rl, 0 7, L_A1)
+ZMK_COMBO(combo_hn, &macro_hn, 1 8, L_A1)
+ZMK_COMBO(combo_dt, &macro_dt, 2 9, L_A1)
+ZMK_COMBO(combo_cy, &macro_cy, 3 10, L_A1)
+ZMK_COMBO(combo_eo, &macro_eo, 4 11, L_A1)
+ZMK_COMBO(combo_ui, &macro_ui, 5 12, L_A1)
+
+// --- Layer 1: Vertical Bigrams ---
+ZMK_COMBO(combo_lr, &macro_lr, 0 7, L_A2)
+ZMK_COMBO(combo_nb, &macro_nb, 1 8, L_A2)
+ZMK_COMBO(combo_mt, &macro_mt, 2 9, L_A2)
+ZMK_COMBO(combo_gy, &macro_gy, 3 10, L_A2)
+ZMK_COMBO(combo_oe, &macro_oe, 4 11, L_A2)
+ZMK_COMBO(combo_iu, &macro_iu, 5 12, L_A2)
+
+// --- Top Row Utilities (Active on All Layers via ALL) ---
+ZMK_COMBO(combo_tab,      &kp TAB,       0 1,   ALL)                     // Left Top (0+1): Tab
+ZMK_COMBO(combo_rtn,      &kp RETURN,    1 2,   ALL)                     // Left Top (1+2): Enter
+ZMK_COMBO(combo_bspc,     &bs_del,       3 4,   ALL)                     // Right Top (3+4): Morphing Backspace / Delete
+ZMK_COMBO(combo_cbspc,    &kp LC(BSPC),  4 5,   ALL)                     // Right Top (4+5): Word Delete Backwards
+ZMK_COMBO(combo_esc,      &kp ESC,       3 4 5, ALL)                     // Right Top (3+4+5): Instant Esc
+
+// --- Home Row Programming Symbols ---
+ZMK_COMBO(combo_sz,       &kp DE_SZ,     6 7,   L_A1 L_A2)               // Left Home (6+7): German ß (Eszett)
+ZMK_COMBO(combo_under,    &kp DE_UNDER,  7 8,   ALL)                     // Left Home (7+8): snake_case Underscore
+ZMK_COMBO(combo_minus,    &kp DE_MINUS,  8 9,   ALL)                     // Left Home (8+9): Hyphen / Minus
+ZMK_COMBO(combo_colon,    &kp DE_COLON,  10 11, ALL)                     // Right Home (10+11): Colon :
+ZMK_COMBO(combo_semi,     &kp DE_SEMI,   11 12, ALL)                     // Right Home (11+12): Statement Semicolon ;
+
+// --- Universal Utilities ---
+ZMK_COMBO(combo_caps,     &caps_word,    14 15, ALL)                     // Left Thumbs (14+15): Caps Word for CONSTANTS
+ZMK_COMBO(combo_stdio,    &studio_unlock, 7 8 9, L_SYM, 50, 200)         // Left Home 3-key (7+8+9): Studio Unlock
+
+// --- Layer 5: Numpad Numbers ---
+ZMK_COMBO(combo_7,        &kp DE_N7,     3 10,  L_NUM)                   // Right Col 1 (3+10): 7
+ZMK_COMBO(combo_8,        &kp DE_N8,     4 11,  L_NUM)                   // Right Col 2 (4+11): 8
+ZMK_COMBO(combo_9,        &kp DE_N9,     5 12,  L_NUM)                   // Right Col 3 (5+12): 9

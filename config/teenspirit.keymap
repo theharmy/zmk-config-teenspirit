@@ -1,17 +1,165 @@
+/*
+ * Teenspirit (18-Key Split Keyboard) Unified Keymap
+ *
+ * Modular architecture:
+ * - config/keys_de.h          -> German keycodes (DE_*)
+ * - config/teenspirit_keys.h      -> Parameterized macros, 14 mod-morph pairs, adaptive magic shift, dual a2, smart space, smart num
+ * - config/teenspirit_macros.dtsi  -> German bigram digraph macros
+ * - config/teenspirit_combos.dtsi  -> Coding & utility combos
+ */
+
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/bt.h>
+#include <dt-bindings/zmk/ext_power.h>
+#include <dt-bindings/zmk/outputs.h>
 
-/ {
-    keymap {
-        compatible = "zmk,keymap";
+#include "keys_de.h"
 
-        default_layer {
-            display-name = "Base";
-            bindings = <
-                &kp A &kp B &kp C &kp D &kp E &kp F
-                &kp G &kp H &kp I &kp J &kp K &kp L &kp M &kp N
-                &kp O &kp P &kp Q &kp R
-            >;
-        };
-    };
-};
+/* ==============================================================================
+ * Global Behavior Settings & Tunings
+ * ============================================================================== */
+
+#define QUICK_TAP_MS 175
+
+#include "zmk-helpers/helper.h"
+
+/* ==============================================================================
+ * Layer Definitions
+ * ============================================================================== */
+
+#define L_A1   0  // Base Alpha Layer 1
+#define L_A2   1  // Secondary Alpha Layer 2
+#define L_NAV  2  // Navigation & Editing
+#define L_SYM  3  // Morphing Brackets & CS Symbols
+#define L_FN   4  // Function Keys & Media
+#define L_NUM  5  // 3x3 Right-Hand Numpad & Arithmetic
+
+#define ALL 0 1 2 3 4 5
+
+/* ==============================================================================
+ * Matrix Geometry & Key Positions
+ *
+ *                     Teenspirit KEY POSITIONS (18 Keys)
+ *
+ *              ╭──────┬──────┬──────╮      ╭──────┬──────┬──────╮
+ *              │  0   │  1   │  2   │      │  3   │  4   │  5   │
+ *       ╭──────┼──────┼──────┼──────┤      ├──────┼──────┼──────┼──────╮
+ *       │  6   │  7   │  8   │  9   │      │  10  │  11  │  12  │  13  │
+ *       ╰──────┴──────┼──────┼──────┤      ├──────┼──────┼──────┴──────╯
+ *                     │  14  │  15  │      │  16  │  17  │
+ *                     ╰──────┴──────╯      ╰──────┴──────╯
+ * ============================================================================== */
+
+#define KEYS_L   0 1 2 6 7 8 9
+#define KEYS_R   3 4 5 10 11 12 13
+#define THUMBS_L 14 15
+#define THUMBS_R 16 17
+#define THUMBS   THUMBS_L THUMBS_R
+
+#define XXX &none
+#define ___ &trans
+
+/* ==============================================================================
+ * Custom Behaviors: Timeless Homerow Mods & Layer-Taps
+ * ============================================================================== */
+
+// Left-hand Homerow Mods (trigger only when chording right-hand keys or thumbs)
+ZMK_HOLD_TAP(hml,
+    flavor = "balanced";
+    tapping-term-ms = <280>;
+    quick-tap-ms = <QUICK_TAP_MS>;
+    require-prior-idle-ms = <500>; //while slow af
+    bindings = <&kp>, <&kp>;
+    hold-trigger-key-positions = <KEYS_R THUMBS>;
+    hold-trigger-on-release;
+)
+
+// Right-hand Homerow Mods (trigger only when chording left-hand keys or thumbs)
+ZMK_HOLD_TAP(hmr,
+    flavor = "balanced";
+    tapping-term-ms = <280>;
+    quick-tap-ms = <QUICK_TAP_MS>;
+    require-prior-idle-ms = <500>; // while slow af
+    bindings = <&kp>, <&kp>;
+    hold-trigger-key-positions = <KEYS_L THUMBS>;
+    hold-trigger-on-release;
+)
+
+// Layer-tap for home row sub-layer access
+ZMK_HOLD_TAP(lt_r4,
+    flavor = "balanced";
+    tapping-term-ms = <200>;
+    quick-tap-ms = <QUICK_TAP_MS>;
+    require-prior-idle-ms = <500>;
+    bindings = <&mo>, <&kp>;
+)
+
+/* Include modular behaviors, macros, combos, and parameter macros */
+#include "teenspirit_keys.h"
+#include "teenspirit_macros.dtsi"
+#include "teenspirit_combos.dtsi"
+
+/* ==============================================================================
+ * Layers
+ * ============================================================================== */
+
+ZMK_LAYER(a1,
+//              ╭────────┬────────┬────────╮      ╭────────┬────────┬────────╮
+                  AL_L     GL(DE_N) SL(DE_D)        SR(DE_Y) GR_O     AR_U
+//       ╭──────┼────────┼────────┼────────┤      ├────────┼────────┼────────┼──────╮
+           CL(DE_S) FN(DE_R) NV_H     S1(DE_T)      S1(DE_C) NV(DE_E) FN_I     CR(DE_A)
+//       ╰──────┴────────┼────────┼────────┤      ├────────┼────────┼────────┴──────╯
+                         A2_DUAL   SPC_NAV          MAGIC_SHIFT SMART_NUM
+//                     ╰─────────┴─────────╯      ╰───────────┴─────────╯
+)
+
+ZMK_LAYER(a2,
+//              ╭────────┬────────┬────────╮      ╭────────┬────────┬────────╮
+                  AL_X     GL_B     SL_M            SR(DE_W) GR(DE_Q) AR(DE_COMMA)
+//       ╭──────┼────────┼────────┼────────┤      ├────────┼────────┼────────┼──────╮
+           CL(DE_F) FN_V     NV(DE_P) S1(DE_K)      S1(DE_G) NV(DE_J) FN(DE_DOT) CR(DE_Z)
+//       ╰──────┴────────┼────────┼────────┤      ├────────┼────────┼────────┴──────╯
+                         &to L_A1  SPC_NAV          MAGIC_SHIFT SMART_NUM
+//                     ╰─────────┴─────────╯      ╰───────────┴─────────╯
+)
+
+ZMK_LAYER(nav,
+//              ╭────────┬────────┬────────╮      ╭────────┬────────┬────────╮
+                  &sk LALT &sk LGUI &sk LSHFT       NAV_LEFT NAV_DOWN NAV_UP
+//       ╭──────┼────────┼────────┼────────┤      ├────────┼────────┼────────┼────────╮
+           &sk LCTRL &kp LG(DE_Q) &kp LG(TAB) &niri_adjust &swapper NAV_PGDN NAV_PGUP NAV_RIGHT
+//       ╰──────┴────────┼────────┼────────┤      ├────────┼────────┼────────┴────────╯
+                         ___       &to L_A1         MAGIC_SHIFT SMART_NUM
+//                     ╰─────────┴─────────╯      ╰───────────┴─────────╯
+)
+
+ZMK_LAYER(sym,
+//              ╭───────────┬───────────┬───────────╮      ╭────────┬────────┬────────────╮
+                  &excl_qmark &hash_tilde &dllr_euro         &lpar_lt &rpar_gt &semi_sqt
+//       ╭──────┼───────────┼───────────┼───────────┤      ├────────┼────────┼────────────┼──────────╮
+            &grave_caret &under_minus &amps_at &pipe_equal  &lbkt_lbrc &rbkt_rbrc &colon_dqt &fslh_bslh
+//       ╰──────┴───────────┼───────────┼───────────┤      ├────────┼────────┼────────────┴──────────╯
+                            ___         &to L_A1           MAGIC_SHIFT SMART_NUM
+//                        ╰───────────┴───────────╯      ╰───────────┴─────────╯
+)
+
+ZMK_LAYER(fn,
+//              ╭──────┬──────┬──────╮      ╭──────┬──────┬──────╮
+                  &kp F1 &kp F2 &kp F3        &kp F8 &kp F9 &kp F10
+//       ╭──────┼──────┼──────┼──────┤      ├──────┼──────┼──────┼──────╮
+           &kp F4 &kp F5 &kp F6 &kp F7        &kp F11 &kp F12 &kp C_VOL_DN &kp C_VOL_UP
+//       ╰──────┴──────┼──────┼──────┤      ├──────┼──────┼──────┴──────╯
+                         ___    &to L_A1      MAGIC_SHIFT SMART_NUM
+//                     ╰──────┴──────╯      ╰───────────┴─────────╯
+)
+
+ZMK_LAYER(num,
+//              ╭────────────┬────────────┬────────────╮      ╭────────┬────────┬────────╮
+                  &kp DE_MINUS &kp DE_ASTRK &kp DE_EQUAL        &kp DE_N4 &kp DE_N5 &kp DE_N6
+//       ╭──────┼────────────┼────────────┼────────────┤      ├────────┼────────┼────────┼──────╮
+           &kp DE_PLUS &kp DE_PRCNT &kp DE_FSLH &dot_comma      &kp DE_N1 &kp DE_N2 &kp DE_N3 &kp DE_N0
+//       ╰──────┴────────────┼────────────┼────────────┤      ├────────┼────────┼────────┴──────╯
+                             ___          &to L_A1            MAGIC_SHIFT SMART_NUM
+//                         ╰────────────┴────────────╯        ╰───────────┴─────────╯
+)
